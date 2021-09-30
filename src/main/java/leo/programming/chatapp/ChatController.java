@@ -15,11 +15,18 @@ public class ChatController {
 
     private final ChatRepository chatRepository;
 
-    // 메세지 수신
+    // 귓속말 전용
     @CrossOrigin
     @GetMapping(value = "/sender/{sender}/receiver/{receiver}", produces = MediaType.TEXT_EVENT_STREAM_VALUE) // 데이터가 지속적으로 흐르게 해준다
     public Flux<Chat> getMsg(@PathVariable String sender, @PathVariable String receiver){
         return chatRepository.mFindBySender(sender, receiver)
+                .subscribeOn(Schedulers.boundedElastic());
+    }
+
+    @CrossOrigin
+    @GetMapping(value = "/chat/roomNum/{roomNum}", produces = MediaType.TEXT_EVENT_STREAM_VALUE) // 데이터가 지속적으로 흐르게 해준다
+    public Flux<Chat> findByRoomNum(@PathVariable Integer roomNum){
+        return chatRepository.mFindByRoomNum(roomNum)
                 .subscribeOn(Schedulers.boundedElastic());
     }
 
